@@ -12,15 +12,11 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.widget.Toast;
-
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.afollestad.materialdialogs.util.TypefaceHelper;
 import com.danimahardhika.android.helpers.core.ColorHelper;
 import com.danimahardhika.android.helpers.core.WindowHelper;
 import com.danimahardhika.cafebar.CafeBar;
-import com.danimahardhika.cafebar.CafeBarTheme;
 import com.example.lolipop.wallpaperproject.R;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
@@ -29,7 +25,7 @@ import com.pojo.WallpaperItem;
 import com.util.ImageConfig;
 
 import java.lang.ref.WeakReference;
-import java.util.Locale;
+
 import java.util.concurrent.Executor;
 
 
