@@ -1,0 +1,213 @@
+package com.preferance;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.support.annotation.NonNull;
+
+
+import com.tasks.WallpaperBoardApplication;
+
+import java.lang.ref.WeakReference;
+
+
+public class Preferences {
+
+    private static final String PREFERENCES_NAME = "wallpaper_board_preferences";
+
+    private static final String KEY_LICENSED = "licensed";
+    private static final String KEY_FIRST_RUN = "first_run";
+    private static final String KEY_DARK_THEME = "dark_theme";
+    private static final String KEY_ROTATE_TIME = "rotate_time";
+    private static final String KEY_ROTATE_MINUTE = "rotate_minute";
+    private static final String KEY_WIFI_ONLY = "wifi_only";
+    private static final String KEY_WALLS_DIRECTORY = "wallpaper_download_directory";
+    private static final String KEY_CROP_WALLPAPER = "crop_wallpaper";
+    private static final String KEY_WALLPAPER_PREVIEW_INTRO = "wallpaper_preview_intro";
+    private static final String KEY_CURRENT_LOCALE = "current_locale";
+    private static final String KEY_LOCALE_DEFAULT = "localeDefault";
+    private static final String KEY_WALLPAPER_TOOLTIP = "wallpaper_tooltip";
+    private static final String KEY_SORT_BY = "sort_by";
+    private static final String KEY_HIGH_QUALITY_PREVIEW = "high_quality_preview";
+    private static final String KEY_BACKUP = "backup";
+    private static final String KEY_PREVIOUS_BACKUP = "previousBackup";
+
+    private static WeakReference<Preferences> mPreferences;
+    private final Context mContext;
+
+    private Preferences(@NonNull Context context) {
+        mContext = context;
+    }
+
+    @NonNull
+    public static Preferences get(@NonNull Context context) {
+        if (mPreferences == null || mPreferences.get() == null) {
+            mPreferences = new WeakReference<>(new Preferences(context));
+        }
+        return mPreferences.get();
+    }
+
+    private SharedPreferences getSharedPreferences() {
+        return mPreferences.get().mContext.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
+    }
+
+    public void clearPreferences() {
+        boolean isLicensed = isLicensed();
+        getSharedPreferences().edit().clear().apply();
+
+        if (isLicensed) {
+            setFirstRun(false);
+            setLicensed(true);
+        }
+    }
+
+    public boolean isLicensed() {
+        return getSharedPreferences().getBoolean(KEY_LICENSED, false);
+    }
+
+    public void setLicensed(boolean bool) {
+        getSharedPreferences().edit().putBoolean(KEY_LICENSED, bool).apply();
+    }
+
+    public boolean isFirstRun() {
+        return getSharedPreferences().getBoolean(KEY_FIRST_RUN, true);
+    }
+
+    public void setFirstRun(boolean bool) {
+        getSharedPreferences().edit().putBoolean(KEY_FIRST_RUN, bool).apply();
+    }
+
+
+    public void setDarkTheme(boolean bool) {
+        getSharedPreferences().edit().putBoolean(KEY_DARK_THEME, bool).apply();
+    }
+
+    public boolean isShadowEnabled() {
+        return WallpaperBoardApplication.getConfig().isShadowEnabled();
+    }
+
+    public boolean isTimeToShowWallpaperPreviewIntro() {
+        return getSharedPreferences().getBoolean(KEY_WALLPAPER_PREVIEW_INTRO, true);
+    }
+
+    public void setTimeToShowWallpaperPreviewIntro(boolean bool) {
+        getSharedPreferences().edit().putBoolean(KEY_WALLPAPER_PREVIEW_INTRO, bool).apply();
+    }
+
+    public void setRotateTime (int time) {
+        getSharedPreferences().edit().putInt(KEY_ROTATE_TIME, time).apply();
+    }
+
+    public int getRotateTime() {
+        return getSharedPreferences().getInt(KEY_ROTATE_TIME, 3600000);
+    }
+
+    public void setRotateMinute (boolean bool) {
+        getSharedPreferences().edit().putBoolean(KEY_ROTATE_MINUTE, bool).apply();
+    }
+
+    public boolean isRotateMinute() {
+        return getSharedPreferences().getBoolean(KEY_ROTATE_MINUTE, false);
+    }
+
+    public boolean isWifiOnly() {
+        return getSharedPreferences().getBoolean(KEY_WIFI_ONLY, false);
+    }
+
+    public void setWifiOnly (boolean bool) {
+        getSharedPreferences().edit().putBoolean(KEY_WIFI_ONLY, bool).apply();
+    }
+
+    void setWallsDirectory(String directory) {
+        getSharedPreferences().edit().putString(KEY_WALLS_DIRECTORY, directory).apply();
+    }
+
+    public String getWallsDirectory() {
+        return getSharedPreferences().getString(KEY_WALLS_DIRECTORY, "");
+    }
+
+    public boolean isCropWallpaper() {
+        return getSharedPreferences().getBoolean(KEY_CROP_WALLPAPER,
+                false);
+    }
+
+    public void setCropWallpaper(boolean bool) {
+        getSharedPreferences().edit().putBoolean(KEY_CROP_WALLPAPER, bool).apply();
+    }
+
+    public boolean isShowWallpaperTooltip() {
+        return getSharedPreferences().getBoolean(KEY_WALLPAPER_TOOLTIP, true);
+    }
+
+    public void setShowWallpaperTooltip(boolean bool) {
+        getSharedPreferences().edit().putBoolean(KEY_WALLPAPER_TOOLTIP, bool).apply();
+    }
+
+    public boolean isHighQualityPreviewEnabled() {
+        return getSharedPreferences().getBoolean(KEY_HIGH_QUALITY_PREVIEW,
+                WallpaperBoardApplication.getConfig().isHighQualityPreviewEnabled());
+    }
+
+    public void setHighQualityPreviewEnabled(boolean bool) {
+        getSharedPreferences().edit().putBoolean(KEY_HIGH_QUALITY_PREVIEW, bool).apply();
+    }
+
+    public boolean isBackupRestored() {
+        return getSharedPreferences().getBoolean(KEY_BACKUP, false);
+    }
+
+    public void setBackupRestored(boolean bool) {
+        getSharedPreferences().edit().putBoolean(KEY_BACKUP, bool).apply();
+    }
+
+    public boolean isPreviousBackupExist() {
+        return getSharedPreferences().getBoolean(KEY_PREVIOUS_BACKUP, false);
+    }
+
+    public void setPreviousBackupExist(boolean bool) {
+        getSharedPreferences().edit().putBoolean(KEY_PREVIOUS_BACKUP, bool).apply();
+    }
+
+
+
+    public void setCurrentLocale(String code) {
+        getSharedPreferences().edit().putString(KEY_CURRENT_LOCALE, code).apply();
+    }
+
+    public boolean isLocaleDefault() {
+        return getSharedPreferences().getBoolean(KEY_LOCALE_DEFAULT, true);
+    }
+
+    public void setLocaleDefault(boolean bool) {
+        getSharedPreferences().edit().putBoolean(KEY_LOCALE_DEFAULT, bool).apply();
+    }
+
+
+
+    public boolean isConnectedToNetwork() {
+        try {
+            ConnectivityManager connectivityManager = (ConnectivityManager)
+                    mPreferences.get().mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+            return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public boolean isConnectedAsPreferred() {
+        try {
+            if (isWifiOnly()) {
+                ConnectivityManager connectivityManager = (ConnectivityManager)
+                        mPreferences.get().mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+                NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+                return activeNetworkInfo.getType() == ConnectivityManager.TYPE_WIFI &&
+                        activeNetworkInfo.isConnected();
+            }
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+}
