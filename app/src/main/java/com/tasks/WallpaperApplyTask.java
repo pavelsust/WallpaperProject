@@ -249,6 +249,7 @@ public class WallpaperApplyTask extends AsyncTask<Void, Void, Boolean> implement
                                 loadedBitmap.getWidth(), loadedBitmap.getHeight()));
                         publishProgress();
                         Bitmap bitmap = loadedBitmap;
+
                         if (!Preferences.get(mContext.get()).isCropWallpaper()) {
                         } else {
                             if (adjustedRectF != null) {

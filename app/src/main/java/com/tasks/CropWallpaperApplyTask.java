@@ -25,68 +25,13 @@ import com.example.lolipop.wallpaperproject.R;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.pojo.WallpaperItem;
-import com.preferance.Preferences;
+
 import com.util.ImageConfig;
 
 import java.lang.ref.WeakReference;
 import java.util.Locale;
 import java.util.concurrent.Executor;
 
-/**
- * Created by lolipop on 2/26/2018.
- package com.dm.wallpaper.board.tasks;
-
- import android.app.Activity;
- import android.app.WallpaperManager;
- import android.content.Context;
- import android.graphics.Bitmap;
- import android.graphics.Canvas;
- import android.graphics.Paint;
- import android.graphics.Point;
- import android.graphics.RectF;
- import android.os.AsyncTask;
- import android.os.Build;
- import android.support.annotation.NonNull;
- import android.support.annotation.Nullable;
- import android.util.Log;
- import android.widget.Toast;
-
- import com.afollestad.materialdialogs.MaterialDialog;
- import com.danimahardhika.android.helpers.core.ColorHelper;
- import com.danimahardhika.android.helpers.core.WindowHelper;
- import com.danimahardhika.cafebar.CafeBar;
- import com.danimahardhika.cafebar.CafeBarTheme;
- import com.dm.wallpaper.board.R;
- import com.dm.wallpaper.board.helpers.TypefaceHelper;
- import com.dm.wallpaper.board.helpers.WallpaperHelper;
- import com.dm.wallpaper.board.items.Wallpaper;
- import com.dm.wallpaper.board.preferences.Preferences;
- import com.dm.wallpaper.board.utils.ImageConfig;
- import com.danimahardhika.android.helpers.core.utils.LogUtil;
- import com.nostra13.universalimageloader.core.ImageLoader;
- import com.nostra13.universalimageloader.core.assist.ImageSize;
-
- import java.lang.ref.WeakReference;
- import java.util.Locale;
- import java.util.concurrent.Executor;
-
- /*
- * Wallpaper Board
- *
- * Copyright (c) 2017 Dani Mahardhika
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
 public class CropWallpaperApplyTask extends AsyncTask<Void, Void, Boolean> implements WallpaperPropertiesLoaderTask.Callback{
 
@@ -96,17 +41,19 @@ public class CropWallpaperApplyTask extends AsyncTask<Void, Void, Boolean> imple
     private Executor mExecutor;
     private WallpaperItem mWallpaper;
     private MaterialDialog mDialog;
+    public boolean isCrop = true;
 
     private CropWallpaperApplyTask(Context context) {
         mContext = new WeakReference<>(context);
     }
+
 
     public CropWallpaperApplyTask to(Apply apply) {
         mApply = apply;
         return this;
     }
 
-    public CropWallpaperApplyTask wallpaper(@NonNull Wallpaper wallpaper) {
+    public CropWallpaperApplyTask wallpaper(@NonNull WallpaperItem wallpaper) {
         mWallpaper = wallpaper;
         return this;
     }
@@ -129,7 +76,7 @@ public class CropWallpaperApplyTask extends AsyncTask<Void, Void, Boolean> imple
 
             final MaterialDialog.Builder builder = new MaterialDialog.Builder(mContext.get());
             builder.widgetColor(color)
-                    .typeface(TypefaceHelper.getMedium(mContext.get()), TypefaceHelper.getRegular(mContext.get()))
+
                     .progress(true, 0)
                     .cancelable(false)
                     .progressIndeterminateStyle(true)
@@ -148,11 +95,11 @@ public class CropWallpaperApplyTask extends AsyncTask<Void, Void, Boolean> imple
 
         mExecutor = executor;
         if (mWallpaper == null) {
-            LogUtil.e("WallpaperApply cancelled, wallpaper is null");
+
             return null;
         }
 
-        if (mWallpaper.getDimensions() == null) {
+        if (mWallpaper.getImageDimension() == null) {
             return WallpaperPropertiesLoaderTask.prepare(mContext.get())
                     .wallpaper(mWallpaper)
                     .callback(this)
@@ -161,16 +108,16 @@ public class CropWallpaperApplyTask extends AsyncTask<Void, Void, Boolean> imple
         return executeOnExecutor(executor);
     }
 
-    public static WallpaperApplyTask prepare(@NonNull Context context) {
-        return new WallpaperApplyTask(context);
+    public static CropWallpaperApplyTask prepare(@NonNull Context context) {
+        return new CropWallpaperApplyTask(context);
     }
 
     @Override
-    public void onPropertiesReceived(Wallpaper wallpaper) {
+    public void onPropertiesReceived(WallpaperItem wallpaper) {
         mWallpaper = wallpaper;
         if (mExecutor == null) mExecutor = SERIAL_EXECUTOR;
-        if (mWallpaper.getDimensions() == null) {
-            LogUtil.e("WallpaperApply cancelled, unable to retrieve wallpaper dimensions");
+        if (mWallpaper.getImageDimension() == null) {
+
 
             if (mContext.get() == null) return;
             if (mContext.get() instanceof Activity) {
@@ -182,15 +129,14 @@ public class CropWallpaperApplyTask extends AsyncTask<Void, Void, Boolean> imple
                 mDialog.dismiss();
             }
 
-            Toast.makeText(mContext.get(), R.string.wallpaper_apply_failed,
-                    Toast.LENGTH_LONG).show();
+
             return;
         }
 
         try {
             executeOnExecutor(mExecutor);
         } catch (IllegalStateException e) {
-            LogUtil.e(Log.getStackTraceString(e));
+
         }
     }
 
@@ -201,7 +147,7 @@ public class CropWallpaperApplyTask extends AsyncTask<Void, Void, Boolean> imple
                 Thread.sleep(1);
                 ImageSize imageSize = WallpaperHelper.getTargetSize(mContext.get());
 
-                LogUtil.d("original rectF: " +mRectF);
+
 
                 if (mRectF != null && Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
                     Point point = WindowHelper.getScreenSize(mContext.get());
@@ -210,25 +156,25 @@ public class CropWallpaperApplyTask extends AsyncTask<Void, Void, Boolean> imple
                     mRectF = WallpaperHelper.getScaledRectF(mRectF, heightFactor, 1f);
                 }
 
-                if (mRectF == null && Preferences.get(mContext.get()).isCropWallpaper()) {
+                if (mRectF == null && isCrop) {
                     /*
                      * Create a center crop rectF if wallpaper applied from grid, not opening the preview first
                      */
-                    float widthScaleFactor = (float) imageSize.getHeight() / (float) mWallpaper.getDimensions().getHeight();
+                    float widthScaleFactor = (float) imageSize.getHeight() / (float) mWallpaper.getImageDimension().getHeight();
 
-                    float side = ((float) mWallpaper.getDimensions().getWidth() * widthScaleFactor - (float) imageSize.getWidth())/2f;
+                    float side = ((float) mWallpaper.getImageDimension().getWidth() * widthScaleFactor - (float) imageSize.getWidth())/2f;
                     float leftRectF = 0f - side;
-                    float rightRectF = (float) mWallpaper.getDimensions().getWidth() * widthScaleFactor - side;
+                    float rightRectF = (float) mWallpaper.getImageDimension().getWidth() * widthScaleFactor - side;
                     float topRectF = 0f;
                     float bottomRectF = (float) imageSize.getHeight();
                     mRectF = new RectF(leftRectF, topRectF, rightRectF, bottomRectF);
-                    LogUtil.d("created center crop rectF: " +mRectF);
+
                 }
 
                 ImageSize adjustedSize = imageSize;
                 RectF adjustedRectF = mRectF;
 
-                float scaleFactor = (float) mWallpaper.getDimensions().getHeight() / (float) imageSize.getHeight();
+                float scaleFactor = (float) mWallpaper.getImageDimension().getHeight() / (float) imageSize.getHeight();
                 if (scaleFactor > 1f) {
                     /*
                      * Applying original wallpaper size caused a problem (wallpaper zoomed in)
@@ -245,21 +191,20 @@ public class CropWallpaperApplyTask extends AsyncTask<Void, Void, Boolean> imple
                     /*
                      * Adjust wallpaper size to match screen resolution:
                      */
-                    float widthScaleFactor = (float) imageSize.getHeight() / (float) mWallpaper.getDimensions().getHeight();
-                    int adjustedWidth = Float.valueOf((float) mWallpaper.getDimensions().getWidth() * widthScaleFactor).intValue();
+                    float widthScaleFactor = (float) imageSize.getHeight() / (float) mWallpaper.getImageDimension().getHeight();
+                    int adjustedWidth = Float.valueOf((float) mWallpaper.getImageDimension().getWidth() * widthScaleFactor).intValue();
                     adjustedSize = new ImageSize(adjustedWidth, imageSize.getHeight());
 
                     if (adjustedRectF != null) {
                         /*
                          * If wallpaper crop enabled, original wallpaper size should be loaded first
                          */
-                        adjustedSize = new ImageSize(mWallpaper.getDimensions().getWidth(), mWallpaper.getDimensions().getHeight());
+                        adjustedSize = new ImageSize(mWallpaper.getImageDimension().getWidth(), mWallpaper.getImageDimension().getHeight());
                         adjustedRectF = WallpaperHelper.getScaledRectF(mRectF, scaleFactor, scaleFactor);
-                        LogUtil.d("adjusted rectF: " + adjustedRectF);
+
                     }
 
-                    LogUtil.d(String.format(Locale.getDefault(), "adjusted bitmap: %d x %d",
-                            adjustedSize.getWidth(), adjustedSize.getHeight()));
+
                 }
 
                 int call = 1;
@@ -284,13 +229,12 @@ public class CropWallpaperApplyTask extends AsyncTask<Void, Void, Boolean> imple
                             /*
                              * Texture size is ok
                              */
-                            LogUtil.d(String.format(Locale.getDefault(), "loaded bitmap: %d x %d",
-                                    loadedBitmap.getWidth(), loadedBitmap.getHeight()));
+
                             publishProgress();
 
                             Bitmap bitmap = loadedBitmap;
-                            if (Preferences.get(mContext.get()).isCropWallpaper() && adjustedRectF != null) {
-                                LogUtil.d("rectF: " +adjustedRectF);
+                            if (isCrop && adjustedRectF != null) {
+
                                 /*
                                  * Cropping bitmap
                                  */
@@ -314,7 +258,7 @@ public class CropWallpaperApplyTask extends AsyncTask<Void, Void, Boolean> imple
 
                                 float scale = (float) targetSize.getHeight() / (float) bitmap.getHeight();
                                 if (scale < 1f) {
-                                    LogUtil.d("bitmap size is bigger than screen resolution, resizing bitmap");
+
                                     int resizedWidth = Float.valueOf((float) bitmap.getWidth() * scale).intValue();
                                     bitmap = Bitmap.createScaledBitmap(bitmap, resizedWidth, targetSize.getHeight(), true);
                                 }
@@ -323,8 +267,7 @@ public class CropWallpaperApplyTask extends AsyncTask<Void, Void, Boolean> imple
                             /*
                              * Final bitmap generated
                              */
-                            LogUtil.d(String.format(Locale.getDefault(), "generated bitmap: %d x %d ",
-                                    bitmap.getWidth(), bitmap.getHeight()));
+
 
                             if (mApply == Apply.HOMESCREEN_LOCKSCREEN) {
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -353,7 +296,7 @@ public class CropWallpaperApplyTask extends AsyncTask<Void, Void, Boolean> imple
                                 }
                             }
                         } catch (OutOfMemoryError e) {
-                            LogUtil.e("loaded bitmap is too big, resizing it ...");
+
                             /*
                              * Texture size is too big
                              * Resizing bitmap
@@ -376,7 +319,7 @@ public class CropWallpaperApplyTask extends AsyncTask<Void, Void, Boolean> imple
                 } while (call <= 5 && !isCancelled());
                 return false;
             } catch (Exception e) {
-                LogUtil.e(Log.getStackTraceString(e));
+
                 return false;
             }
         }
@@ -423,14 +366,13 @@ public class CropWallpaperApplyTask extends AsyncTask<Void, Void, Boolean> imple
 
         if (aBoolean) {
             CafeBar.builder(mContext.get())
-                    .theme(Preferences.get(mContext.get()).isDarkTheme() ? CafeBarTheme.LIGHT : CafeBarTheme.DARK)
-                    .contentTypeface(TypefaceHelper.getRegular(mContext.get()))
+
                     .floating(true)
                     .fitSystemWindow()
                     .content(R.string.wallpaper_applied)
                     .show();
         } else {
-            Toast.makeText(mContext.get(), R.string.wallpaper_apply_failed,
+            Toast.makeText(mContext.get(), R.string.set_task_error,
                     Toast.LENGTH_LONG).show();
         }
     }

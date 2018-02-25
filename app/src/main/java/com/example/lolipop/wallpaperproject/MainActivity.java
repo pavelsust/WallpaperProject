@@ -21,6 +21,7 @@ import android.widget.ImageView;
 
 import com.adapter.ItemAdapter;
 import com.pojo.WallpaperItem;
+import com.tasks.CropWallpaperApplyTask;
 import com.tasks.WallpaperApplyTask;
 import com.tasks.WallpaperDownloader;
 import com.tasks.WallpaperPropertiesLoaderTask;
@@ -97,9 +98,9 @@ public class MainActivity extends AppCompatActivity implements ItemAdapter.CallB
     @Override
     public void setWallpaper(int position, WallpaperItem wallpaperItem) {
 
-                WallpaperApplyTask.prepare(MainActivity.this)
+                CropWallpaperApplyTask.prepare(MainActivity.this)
                         .wallpaper(wallpaperItem)
-                        .to(WallpaperApplyTask.Apply.HOMESCREEN)
+                        .to(CropWallpaperApplyTask.Apply.HOMESCREEN)
                         .start(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
