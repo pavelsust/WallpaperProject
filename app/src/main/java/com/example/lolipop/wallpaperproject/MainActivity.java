@@ -2,6 +2,7 @@ package com.example.lolipop.wallpaperproject;
 
 import android.app.DownloadManager;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -10,6 +11,8 @@ import android.os.Environment;
 import android.support.annotation.ColorInt;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,6 +21,7 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.adapter.ItemAdapter;
 import com.pojo.WallpaperItem;
@@ -93,6 +97,19 @@ public class MainActivity extends AppCompatActivity implements ItemAdapter.CallB
     @Override
     public void show(int position, WallpaperItem items, ImageView imageView) {
 
+
+        Toast.makeText(getApplicationContext(), "Click", Toast.LENGTH_SHORT).show();
+
+        Intent intent = new Intent(this, ImageShowActivity.class);
+        intent.putExtra("item", items.getUrl());
+        intent.putExtra("view", ViewCompat.getTransitionName(imageView));
+
+        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                this,
+                imageView,
+                ViewCompat.getTransitionName(imageView));
+
+        startActivity(intent, options.toBundle());
     }
 
     @Override

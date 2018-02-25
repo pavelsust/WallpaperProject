@@ -77,8 +77,6 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.CustomViewHold
         return customViewHolder;
     }
 
-
-
     @Override
     public void onBindViewHolder(CustomViewHolder holder, int position) {
 
@@ -110,7 +108,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.CustomViewHold
         return itemsArrayList.size();
     }
 
-    public class CustomViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public class CustomViewHolder extends RecyclerView.ViewHolder{
 
         @BindView(R.id.image)
         ImageView imageView;
@@ -120,6 +118,8 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.CustomViewHold
         @BindView(R.id.apply)
         ImageView apply;
 
+        @BindView(R.id.card)
+                CardView cardView;
         View view;
         @BindView(R.id.download)
         ImageView download;
@@ -129,12 +129,16 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.CustomViewHold
             super(itemView);
             this.view = itemView;
             ButterKnife.bind(this , itemView);
+            /*
             imageView.setOnClickListener(this);
             love.setOnClickListener(this);
             apply.setOnClickListener(this);
             download.setOnClickListener(this);
+            cardView.setOnClickListener(this);
+            */
         }
 
+        /*
         @Override
         public void onClick(View v) {
             int position = getAdapterPosition();
@@ -155,10 +159,16 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.CustomViewHold
                 callBack.downloadWallpaper(position , items);
             }else if (id == R.id.apply){
                 callBack.setWallpaper(position , items);
+            }else if (id == R.id.card){
+                callBack.show(position , items , imageView);
             }
 
         }
+
+          */
     }
+
+
 
     public interface CallBack{
         void show(int position, WallpaperItem items, ImageView imageView);

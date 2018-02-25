@@ -124,11 +124,9 @@ public class CropWallpaperApplyTask extends AsyncTask<Void, Void, Boolean> imple
             if (mDialog != null && mDialog.isShowing()) {
                 mDialog.dismiss();
             }
-
-
             return;
         }
-
+        
         try {
             executeOnExecutor(mExecutor);
         } catch (IllegalStateException e) {
